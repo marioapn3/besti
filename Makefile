@@ -12,3 +12,5 @@ start_venv:
 
 seeders:
 	python -m app.db.seeders.run_seeders
+
+	

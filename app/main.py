@@ -48,20 +48,11 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 app.add_middleware(SlowAPIMiddleware)
 
-origins = [
-    "http://localhost",  
-    "http://localhost:3000", 
-    "http://localhost:3001", 
-    "https://monago-automation-frontend.terminal.monago.io",
-    "https://console.monago.io",
-    "https://legal-pulse.vercel.app",
-    "https://kawalhukum.monago.io",
-    "https://kawalhukum.xyz"
-]
+
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  
+    allow_origins=["*"],  
     allow_credentials=True,  
     allow_methods=["*"],  
     allow_headers=["*"],  
