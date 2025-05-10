@@ -52,7 +52,7 @@ logs/
 *.log
 
 # public file
-public/
+# public/
 
 # chromadb
 /chroma_db/
