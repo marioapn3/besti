@@ -87,6 +87,10 @@ async def add_process_time_header(request: Request, call_next):
 app.mount("/public", StaticFiles(directory="public"), name="public")
 app.mount("/private", StaticFiles(directory="private"), name="private")
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to BESTI (Bot STI) API."}
+
 app.include_router(api_router, prefix="/api/v1")
 
 # @app.get("/")
