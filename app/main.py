@@ -92,7 +92,3 @@ async def root():
     return {"message": "Welcome to BESTI (Bot STI) API."}
 
 app.include_router(api_router, prefix="/api/v1")
-
-# @app.get("/")
-# async def root():
-#     return {"message": "Welcome to BESTI (Bot STI) API."}

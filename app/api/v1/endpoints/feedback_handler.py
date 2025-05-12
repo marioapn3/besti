@@ -64,6 +64,50 @@ def generate_caption(image, tema):
             
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating caption: {str(e)}")
+    
+def feedback_penilaian(image, rules):
+    """Generate caption using Gemini"""
+    try:
+        # Initialize Gemini Pro Vision model
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Generate caption
+        response = model.generate_content([
+            """
+            Anda adalah seorang ai yang membantu user untuk melakukan pengecekan terhadap
+            submission gambar yang akan dikirim user. Saya akan memberikan sebuah rules / kententuan
+            dari submission gambar yang akan dikirim user. Ini adalah rules nya: """ + rules + """
+
+            Berikan penilaian dan feedback terhadap submission gambar yang akan dikirim user.
+            Berikan penilaian secara apa adanya, tidak perlu meminta data lain, 
+            meminta upload ulang gambar, maupun meminta format lain .
+            Berikan respon yang ramah dan profesional.
+            Return dalam format JSON dengan key:
+            - kesesuian_dengan_rules : string (apakah gambar sesuai dengan rules yang diberikan)
+            - feedback : string (feedback dan saran untuk user agar sesuai dengan rules yang diberikan)
+            - kesimpulan : string (kesimpulan dari penilaian diatas)
+            - rating : integer (rating dari 1 sampai 10 berdasarkan kesesuian dengan rules yang diberikan)
+        """,
+            image
+        ])
+        
+        # Clean and parse the response text as JSON
+        try:
+            # Remove markdown code block formatting
+            response_text = response.text
+            if "```json" in response_text:
+                response_text = response_text.split("```json")[1].split("```")[0].strip()
+            elif "```" in response_text:
+                response_text = response_text.split("```")[1].split("```")[0].strip()
+            
+            # Parse the cleaned JSON string
+            response_json = json.loads(response_text)
+            return response_json
+        except json.JSONDecodeError as e:
+            raise HTTPException(status_code=500, detail=f"Invalid JSON response from Gemini: {str(e)}")
+            
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error generating caption: {str(e)}")
 
 @router.post("/caption")
 async def create_caption(
@@ -104,14 +148,14 @@ async def create_caption(
         processing_time = time.time() - start_time
         
         return {
-            "status": "success",
-            "feedback" : {
+            "success": True,
+            "data" : {
                    "tema": response_data.get("tema", ""),
                 "keunikan_motif": response_data.get("keunikan_motif", ""),
                 "teknik_pewarnaan_dan_komposisi": response_data.get("teknik_pewarnaan_dan_komposisi", ""),
                 "kesimpulan": response_data.get("kesimpulan", ""),
+                  "similiarity_score": similiarity_score.get("similarity_score", ""),
             },
-            "similiarity_score": similiarity_score.get("similarity_score", ""),
             "processing_time": f"{processing_time:.2f} seconds",
             "filename": file.filename,
             "tema": tema
@@ -119,6 +163,39 @@ async def create_caption(
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+    
+
+
+@router.post("/feedback-penilaian")
+async def create_caption(
+    file: UploadFile = File(...),
+    rules: str = Form(...)
+):
+    try:
+        # Validasi file
+        if not file.content_type.startswith('image/'):
+            raise HTTPException(status_code=400, detail="File harus berupa gambar")
+        
+        # Baca file
+        contents = await file.read()
+        image = Image.open(io.BytesIO(contents))
+        
+        # Generate caption
+        start_time = time.time()
+        response_data = feedback_penilaian(image, rules)
+        processing_time = time.time() - start_time
+        
+        return {
+            "success": True,
+            "data" : response_data,
+            "processing_time": f"{processing_time:.2f} seconds",
+            "filename": file.filename,
+            "rules": rules
+        }
+    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
 
 @router.get("/")
 async def root():
