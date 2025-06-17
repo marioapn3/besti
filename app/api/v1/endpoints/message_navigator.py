@@ -240,7 +240,7 @@ def load_markdown_files():
         return generate_response_error(ERR_MSG["internal_server_error"], 500)
 
 @router.post("/load-markdown-v2", response_model=dict)
-def load_markdown_files():
+def load_markdown_files_v2():
     try:
         # Path ke direktori data
         data_dir = Path("public/data/Standardized Corpus")
@@ -272,19 +272,10 @@ def load_markdown_files():
                 # Split berdasarkan struktur heading markdown
                 md_chunks = header_splitter.split_text(markdown_string)
 
-                # Ubah ke format Document untuk ChromaDB
-                documents = [
-                    Document(
-                        page_content=chunk["content"],
-                        metadata={
-                            "source": str(file_path),
-                            **chunk["metadata"]
-                        }
-                    )
-                    for chunk in md_chunks
-                ]
+                for doc in md_chunks:
+                    doc.metadata["source"] = str(file_path)
 
-                all_documents.extend(documents)
+                all_documents.extend(md_chunks)
 
             except Exception as e:
                 logger.error(f"Error loading file {file_path}: {str(e)}")
