@@ -72,11 +72,7 @@ from app.utils.response import generate_response, generate_response_error, gener
 # from app.utils.prompt.helper import MESSAGE_SYSTEM_PROMPT
 
 # from langchain.cache import RedisSemanticCache
-from langchain.globals import set_llm_cache
 from langchain_community.vectorstores.redis import Redis as RedisVectorStore
-from langchain.embeddings.openai import OpenAIEmbeddings
-from langchain.globals import get_llm_cache
-from langchain_core.outputs import Generation
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 # Setup embeddings dan RedisSemanticCache
