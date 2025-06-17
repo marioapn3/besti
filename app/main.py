@@ -29,8 +29,8 @@ configure_logger()
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Lifespan event handler for startup and shutdown."""
-    load_clip_model()
-    load_dataset()
+    # load_clip_model()
+    # load_dataset()
     yield
 
 
@@ -41,7 +41,8 @@ app = FastAPI(
     description="API for managing BESTI (Bot STI) API platform.",
     docs_url=None if is_production else "/docs",  
     redoc_url=None if is_production else "/redoc" ,
-    lifespan=lifespan
+    lifespan=lifespan,
+    root_path="/besti-api"
 )
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
