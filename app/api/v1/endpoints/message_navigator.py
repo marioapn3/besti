@@ -41,6 +41,7 @@ from langchain_google_vertexai import ChatVertexAI
 # Add these imports after the existing langchain imports
 from langchain_community.document_loaders import UnstructuredMarkdownLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from langchain_text_splitters import MarkdownHeaderTextSplitter
 
 # Application Schemas
 
@@ -242,3 +243,69 @@ def load_markdown_files():
         logger.error(f"Error loading markdown files: {str(e)}")
         return generate_response_error(ERR_MSG["internal_server_error"], 500)
 
+@router.post("/load-markdown-v2", response_model=dict)
+def load_markdown_files():
+    try:
+        # Path ke direktori data
+        data_dir = Path("public/data/Standardized Corpus")
+        
+        # Ambil semua file markdown secara rekursif
+        markdown_files = list(data_dir.rglob("*.md"))
+        
+        if not markdown_files:
+            return generate_response_error({"message": "No markdown files found"}, 404)
+
+        all_documents = []
+        
+        # Konfigurasi header markdown untuk chunking
+        header_splitter = MarkdownHeaderTextSplitter(
+            headers_to_split_on=[
+                ("#", "heading_1"),
+                ("##", "heading_2"),
+                ("###", "heading_3"),
+                ("####", "heading_4"),
+            ]
+        )
+        
+        for file_path in markdown_files:
+            try:
+                # Baca markdown sebagai string (bukan pakai loader dulu)
+                with open(file_path, "r", encoding="utf-8") as f:
+                    markdown_string = f.read()
+                
+                # Split berdasarkan struktur heading markdown
+                md_chunks = header_splitter.split_text(markdown_string)
+
+                # Ubah ke format Document untuk ChromaDB
+                documents = [
+                    Document(
+                        page_content=chunk["content"],
+                        metadata={
+                            "source": str(file_path),
+                            **chunk["metadata"]
+                        }
+                    )
+                    for chunk in md_chunks
+                ]
+
+                all_documents.extend(documents)
+
+            except Exception as e:
+                logger.error(f"Error loading file {file_path}: {str(e)}")
+                continue
+        
+        if not all_documents:
+            return generate_response_error({"message": "No documents could be loaded"}, 400)
+
+        # Tambahkan semua dokumen ke ChromaDB
+        chroma_vectors.add_documents(all_documents)
+        
+        return generate_response({
+            "message": f"Successfully loaded {len(all_documents)} document chunks from {len(markdown_files)} files",
+            "files_processed": len(markdown_files),
+            "chunks_created": len(all_documents)
+        }, "Documents loaded successfully", True, 200)
+    
+    except Exception as e:
+        logger.error(f"Error loading markdown files: {str(e)}")
+        return generate_response_error(ERR_MSG["internal_server_error"], 500)

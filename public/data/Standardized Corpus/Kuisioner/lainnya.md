@@ -200,7 +200,8 @@ Untuk mendaftar sebagai asisten dosen, Anda dapat menghubungi dosen yang bersang
 
 ## Siapa nama Rektor Universitas Dian Nuswantoro (UDINUS)?
 
-Rektor Universitas Dian Nuswantoro (UDINUS) adalah Prof. Dr. Ir. Edi Noersasongko, M.Kom.
+Rektor Universitas Dian Nuswantoro (UDINUS / Udinus) adalah Prof. Dr. Pulung Nurtantio Andono, S.T., M.Kom.
+
 
 ## Ada berapa program studi di Universitas Dian Nuswantoro (UDINUS)?
 

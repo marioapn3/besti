@@ -1,8 +1,9 @@
 # Pertanyaan terkait dengan Universitas di Universitas Dian Nuswantoro
 
-## Sejak kapan prof edi menjabat sebagai rektor udinus?
+## Sejak kapan prof pulung menjabat sebagai rektor udinus?
 
-Prof. Dr. Ir. Edi Noersasongko, M. Kom., menjabat sebagai rektor UDINUS sejak tahun 2010.
+Prof. Dr. Pulung Nurtantio Andono, S.T., M.Kom.
+menjabat sebagai rektor UDINUS sejak tahun 2010.
 
 ## Apakah Universitas Dian Nuswantoro memiliki tempat khusus bagi mahasiswa yang membawa bekal dari rumah, misal tempat seperti kantin yang memiliki banyak meja dan kursi, serta memperbolehkan membawa makanan dari luar?
 

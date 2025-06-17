@@ -2,7 +2,7 @@
 
 ## Pimpinan UDINUS
 ### Rektor dan Pendiri
-Prof. Dr. Ir EDI NOERSASONGKO, M.Kom
+Prof. Dr. Pulung Nurtantio Andono, S.T., M.Kom.
 
 ### Wakil Rektor 
 #### Wakil Rektor 1 

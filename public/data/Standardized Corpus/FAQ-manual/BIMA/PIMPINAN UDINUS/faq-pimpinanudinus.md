@@ -1,7 +1,7 @@
 # FAQ Pimpinan UDINUS 
 
 ## Siapa rektor Universitas Dian Nuswantoro (UDINUS) saat ini?
-Rektor UDINUS saat ini adalah Prof. Dr. Ir. Edi Noersasongko, M.Kom, yang juga merupakan pendiri universitas.
+Rektor UDINUS saat ini adalah Prof. Dr. Pulung Nurtantio Andono, S.T., M.Kom.
 
 ## Siapa yang menjabat sebagai Wakil Rektor 1 UDINUS?
 Wakil Rektor 1 UDINUS yang menangani bidang akademik adalah Prof. Dr. Supriadi Rustad, M.Si.
