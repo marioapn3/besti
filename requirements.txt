@@ -48,8 +48,8 @@ unstructured[all-docs]
 Pillow
 python-dotenv 
 
-torch==2.4.1
-torchvision==0.19.1
-scikit-learn==1.5.2
-kaggle==1.6.17
-git+https://github.com/openai/CLIP.git
+# torch==2.4.1
+# torchvision==0.19.1
+# scikit-learn==1.5.2
+# kaggle==1.6.17
+# git+https://github.com/openai/CLIP.git

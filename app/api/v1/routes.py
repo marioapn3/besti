@@ -2,7 +2,7 @@ from fastapi import APIRouter
 
 from app.api.v1.endpoints import (
         message_navigator,
-    recognize_handler,
+    # recognize_handler,
     feedback_handler,   
 )
 

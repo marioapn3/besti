@@ -119,8 +119,11 @@ def create_message(request: Request, data: MessageRequest):
         
         # Retrieve relevant documents from ChromaDB
         retriever = chroma_vectors.as_retriever(
-            search_type="similarity",
-            search_kwargs={"k": 3}  # Get top 3 most relevant documents
+            search_type="mmr",
+            search_kwargs={
+                "k": 8,
+                "lambda_mult": 0.7,
+            }
         )
         relevant_docs = retriever.get_relevant_documents(data.query)
         
@@ -129,13 +132,14 @@ def create_message(request: Request, data: MessageRequest):
         logger.info(context)
         
         system_message = f"""
-            Anda adalah chatbot akademik Universitas Dian Nuswantoro yang melayani mahasiswa.
+            Anda adalah chatbot akademik Sarjana Teknik Informatika Universitas Dian Nuswantoro yang melayani mahasiswa.
             Berikut adalah informasi yang relevan untuk menjawab pertanyaan:
 
             {context}
 
             Jawablah pertanyaan mahasiswa di bawah dengan padat dan jelas berdasarkan informasi di atas.
-            Jika informasi di atas tidak cukup untuk menjawab pertanyaan, berikan jawaban umum yang informatif.
+            Jika Context tidak relevan / tidak ada, berikan jawaban umum yang informatif dari informasi yang ada
+            di internet.
         """
 
         # Format messages untuk Gemini API
@@ -239,21 +243,15 @@ def load_markdown_files():
         logger.error(f"Error loading markdown files: {str(e)}")
         return generate_response_error(ERR_MSG["internal_server_error"], 500)
 
-@router.post("/load-markdown-v2", response_model=dict)
-def load_markdown_files_v2():
+@router.post("/load-markdown-v3", response_model=dict)
+def load_markdown_files_v3():
     try:
-        # Path ke direktori data
         data_dir = Path("public/data/Standardized Corpus")
-        
-        # Ambil semua file markdown secara rekursif
         markdown_files = list(data_dir.rglob("*.md"))
         
         if not markdown_files:
             return generate_response_error({"message": "No markdown files found"}, 404)
 
-        all_documents = []
-        
-        # Konfigurasi header markdown untuk chunking
         header_splitter = MarkdownHeaderTextSplitter(
             headers_to_split_on=[
                 ("#", "heading_1"),
@@ -262,37 +260,47 @@ def load_markdown_files_v2():
                 ("####", "heading_4"),
             ]
         )
-        
+
+        recursive_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=800,  # bisa disesuaikan
+            chunk_overlap=100,
+            length_function=len,
+        )
+
+        all_chunks = []
+
         for file_path in markdown_files:
             try:
-                # Baca markdown sebagai string (bukan pakai loader dulu)
                 with open(file_path, "r", encoding="utf-8") as f:
                     markdown_string = f.read()
-                
-                # Split berdasarkan struktur heading markdown
+
+                # 1. Split berdasar heading dulu
                 md_chunks = header_splitter.split_text(markdown_string)
 
-                for doc in md_chunks:
-                    doc.metadata["source"] = str(file_path)
+                # 2. Split lagi setiap chunk heading pakai recursive character splitter
+                sub_chunks = recursive_splitter.split_documents(md_chunks)
 
-                all_documents.extend(md_chunks)
+                # 3. Tambahkan metadata "source"
+                for chunk in sub_chunks:
+                    chunk.metadata["source"] = str(file_path)
+
+                all_chunks.extend(sub_chunks)
 
             except Exception as e:
                 logger.error(f"Error loading file {file_path}: {str(e)}")
                 continue
-        
-        if not all_documents:
+
+        if not all_chunks:
             return generate_response_error({"message": "No documents could be loaded"}, 400)
 
-        # Tambahkan semua dokumen ke ChromaDB
-        chroma_vectors.add_documents(all_documents)
-        
+        chroma_vectors.add_documents(all_chunks)
+
         return generate_response({
-            "message": f"Successfully loaded {len(all_documents)} document chunks from {len(markdown_files)} files",
+            "message": f"Successfully loaded {len(all_chunks)} document chunks from {len(markdown_files)} files",
             "files_processed": len(markdown_files),
-            "chunks_created": len(all_documents)
+            "chunks_created": len(all_chunks)
         }, "Documents loaded successfully", True, 200)
-    
+
     except Exception as e:
         logger.error(f"Error loading markdown files: {str(e)}")
         return generate_response_error(ERR_MSG["internal_server_error"], 500)

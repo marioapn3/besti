@@ -16,7 +16,7 @@ from slowapi.middleware import SlowAPIMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from app.api.v1.endpoints.recognize_handler import load_clip_model, load_dataset
+# from app.api.v1.endpoints.recognize_handler import load_clip_model, load_dataset
 
 
 import os

@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import google.generativeai as genai
 from fastapi import APIRouter
 
-from .recognize_handler import recognize_batik_image
+# from .recognize_handler import recognize_batik_image
 
 
 # Load environment variables
@@ -109,60 +109,60 @@ def feedback_penilaian(image, rules):
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error generating caption: {str(e)}")
 
-@router.post("/caption")
-async def create_caption(
-    file: UploadFile = File(...),
-    tema: str = Form(...)
-):
-    """
-    Endpoint untuk generate caption dari gambar
+# @router.post("/caption")
+# async def create_caption(
+#     file: UploadFile = File(...),
+#     tema: str = Form(...)
+# ):
+#     """
+#     Endpoint untuk generate caption dari gambar
     
-    Parameters:
-    - file: File gambar yang akan diproses (JPEG, PNG, dll)
-    - tema: Tema batik yang akan dinilai
+#     Parameters:
+#     - file: File gambar yang akan diproses (JPEG, PNG, dll)
+#     - tema: Tema batik yang akan dinilai
     
-    Returns:
-    - status: Status response
-    - caption: Caption yang dihasilkan
-    - rating: Rating yang dihasilkan
-    - feedback: Feedback yang dihasilkan
-    - processing_time: Waktu yang dibutuhkan untuk memproses
-    """
-    try:
-        # Validasi file
-        if not file.content_type.startswith('image/'):
-            raise HTTPException(status_code=400, detail="File harus berupa gambar")
+#     Returns:
+#     - status: Status response
+#     - caption: Caption yang dihasilkan
+#     - rating: Rating yang dihasilkan
+#     - feedback: Feedback yang dihasilkan
+#     - processing_time: Waktu yang dibutuhkan untuk memproses
+#     """
+#     try:
+#         # Validasi file
+#         if not file.content_type.startswith('image/'):
+#             raise HTTPException(status_code=400, detail="File harus berupa gambar")
         
-        # Baca file
-        contents = await file.read()
-        image = Image.open(io.BytesIO(contents))
+#         # Baca file
+#         contents = await file.read()
+#         image = Image.open(io.BytesIO(contents))
         
-        # Generate caption
-        start_time = time.time()
-        response_data = generate_caption(image, tema)
-        processing_time = time.time() - start_time
+#         # Generate caption
+#         start_time = time.time()
+#         response_data = generate_caption(image, tema)
+#         processing_time = time.time() - start_time
 
-        # Recognize batik image
-        start_time = time.time()
-        similiarity_score = recognize_batik_image(image, tema)
-        processing_time = time.time() - start_time
+#         # Recognize batik image
+#         start_time = time.time()
+#         similiarity_score = recognize_batik_image(image, tema)
+#         processing_time = time.time() - start_time
         
-        return {
-            "success": True,
-            "data" : {
-                   "tema": response_data.get("tema", ""),
-                "keunikan_motif": response_data.get("keunikan_motif", ""),
-                "teknik_pewarnaan_dan_komposisi": response_data.get("teknik_pewarnaan_dan_komposisi", ""),
-                "kesimpulan": response_data.get("kesimpulan", ""),
-                  "similiarity_score": similiarity_score.get("similarity_score", ""),
-            },
-            "processing_time": f"{processing_time:.2f} seconds",
-            "filename": file.filename,
-            "tema": tema
-        }
+#         return {
+#             "success": True,
+#             "data" : {
+#                    "tema": response_data.get("tema", ""),
+#                 "keunikan_motif": response_data.get("keunikan_motif", ""),
+#                 "teknik_pewarnaan_dan_komposisi": response_data.get("teknik_pewarnaan_dan_komposisi", ""),
+#                 "kesimpulan": response_data.get("kesimpulan", ""),
+#                   "similiarity_score": similiarity_score.get("similarity_score", ""),
+#             },
+#             "processing_time": f"{processing_time:.2f} seconds",
+#             "filename": file.filename,
+#             "tema": tema
+#         }
     
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail=str(e))
     
 
 
