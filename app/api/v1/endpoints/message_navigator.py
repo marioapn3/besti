@@ -121,7 +121,7 @@ def create_message(request: Request, data: MessageRequest):
         retriever = chroma_vectors.as_retriever(
             search_type="mmr",
             search_kwargs={
-                "k": 8,
+                "k": 5,
                 "lambda_mult": 0.7,
             }
         )
@@ -132,14 +132,16 @@ def create_message(request: Request, data: MessageRequest):
         logger.info(context)
         
         system_message = f"""
-            Anda adalah chatbot akademik Sarjana Teknik Informatika Universitas Dian Nuswantoro yang melayani mahasiswa.
+            Nama anda adalah BeSTI yang merupakan
+            chatbot akademik Sarjana Teknik Informatika Universitas Dian Nuswantoro yang melayani mahasiswa.
             Berikut adalah informasi yang relevan untuk menjawab pertanyaan:
 
             {context}
 
             Jawablah pertanyaan mahasiswa di bawah dengan padat dan jelas berdasarkan informasi di atas.
             Jika Context tidak relevan / tidak ada, berikan jawaban umum yang informatif dari informasi yang ada
-            di internet.
+            di internet. 
+            Jawab dengan ramah sopan dan menyenangkan.
         """
 
         # Format messages untuk Gemini API
